@@ -6,46 +6,29 @@
 
 #include "places-airports.h"
 #include <iostream>
-#include <random>
-#include <chrono>
 #include <iomanip>
-#include <thread>
 
-std::default_random_engine dre((std::random_device())());
-std::uniform_real_distribution<double> distr{};
-
-airports_ret * air_qry_1_svc(location_s *argp, struct svc_req *rqstp)
+airports_ret *
+airports_qry_1_svc(location *argp, struct svc_req *rqstp)
 {
-  using namespace std::chrono_literals;
 	static airports_ret  result;
 
   std::cout << "Airports got a request lat: " 
             << argp->latitude << ", long: " << argp->longitude << std::endl;
 
-  const int sleepDurSecs = distr(dre) * 5000;
-  std::cout << "Airports server sleeping for " << sleepDurSecs << " ms" << std::endl;
-  std::this_thread::sleep_for(std::chrono::milliseconds(sleepDurSecs));
   result.err = 0;
 
   std::cout << "done sleeping" << std::endl;
 
-  static airp_dist_t sampleResults[5] = {0};
+  auto& airports = result.airports_ret_u.results;
   for (int i = 0; i < 5; ++i) {
-    sampleResults[i].airport.loc.latitude = distr(dre) - 0.5;
-    sampleResults[i].airport.loc.longitude = distr(dre) - 0.5;
-    sampleResults[i].airport.code = (char*)"abc";
-    sampleResults[i].airport.name = (char*)"sample";
-    sampleResults[i].airport.state = (char*)"WA";
-    sampleResults[i].distance = distr(dre);
+    airports[i].loc.latitude = 0.1;
+    airports[i].loc.longitude = 0.2;
+    airports[i].code = (char*)"abc";
+    airports[i].name = (char*)"sample";
+    airports[i].state = (char*)"WA";
+    airports[i].dist = 0.3;
   }
-
-  result.airports_ret_u
-        .airports
-        .airp_dist_recs_t_len = 5;
-
-  result.airports_ret_u
-        .airports
-        .airp_dist_recs_t_val = (airp_dist_t *)&sampleResults;
 
   std::cout << "Returning result" << std::endl;
 	return &result;

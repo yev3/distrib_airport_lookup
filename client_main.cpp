@@ -6,9 +6,28 @@
 
 #include "places-airports.h"
 #include <iostream>
+#include <iomanip>
+
+std::ostream & operator<<(std::ostream & strm, const location & loc) {
+  return strm << "{" << std::fixed << std::setprecision(3)
+         << loc.latitude << ", " << loc.longitude << "}";
+}
+
+std::ostream& operator<<(std::ostream & strm, const place & place) {
+  return strm << place.name << ", " << place.state << " " << place.loc;
+}
+
+std::ostream& operator<<(std::ostream & strm, const airport & airp) {
+  strm << airp.code;
+  strm << " " << std::setw(24) << std::left << airp.name;
+  strm << std::setw(0) << " " << airp.state;
+  strm << " " << std::fixed << std::setprecision(1) << airp.dist;
+  strm << " " << airp.loc;
+  return strm;
+}
 
 void
-places_prog_1(char *host, client_req_t *req)
+places_prog_1(char *host, places_req *req)
 {
 	CLIENT *clnt;
 	places_ret  *placesResult;
@@ -23,84 +42,53 @@ places_prog_1(char *host, client_req_t *req)
 	}
 #endif	/* DEBUG */
 
+
   std::cout << "done." << std::endl;;
 
-  std::cout << "Querying: " << req->city << ", " << req->state << std::endl;
+  std::cout << "Querying: " << req->places_req_u.named.name 
+    << ", " << req->places_req_u.named.state << std::endl;
 
 
 	placesResult = places_qry_1(req, clnt);
 	if (placesResult == (places_ret *) NULL) {
 		clnt_perror (clnt, "call failed");
-	}
-
-  std::cout << "Result: " << std::endl;
-  std::cout << "Err: " << placesResult->err << std::endl;
-  if (placesResult->err) {
-    std::cout << "Error occured: " << placesResult->places_ret_u.error_msg << std::endl;
-  } else {
-    places_result_s &plResult = placesResult->places_ret_u.result;
-    std::cout << plResult.place << std::endl;
-    airp_dist_t * airResult = plResult.airports.airp_dist_recs_t_val;
-    for (int i = 0; i < plResult.airports.airp_dist_recs_t_len; ++i) {
-      std::cout << "--- " << i + 1 << " ---" << std::endl;
-      std::cout << "lat:   " << airResult[i].airport.loc.latitude << std::endl;
-      std::cout << "long:  " << airResult[i].airport.loc.longitude << std::endl;
-      std::cout << "code:  " << airResult[i].airport.code << std::endl;
-      std::cout << "name:  " << airResult[i].airport.name << std::endl;
-      std::cout << "state: " << airResult[i].airport.state << std::endl;
-      std::cout << "dist:  " << airResult[i].distance << std::endl;
-      std::cout << std::endl;
+	} else {
+    std::cout << "Result: " << std::endl;
+    std::cout << "Err: " << placesResult->err << std::endl;
+    if (placesResult->err) {
+      std::cout << "Error occured: " << placesResult->places_ret_u.error_msg << std::endl;
+    } else {
+      place_airports &resp = placesResult->places_ret_u.results;
+      std::cout << resp.request << std::endl;
+      airport * airp = resp.results;
+      for (int i = 0; i < NRESULTS; ++i) {
+        std::cout << i + 1 << ". " << airp[i] << std::endl;
+      }
     }
-  }
+	}
 
 #ifndef	DEBUG
 	clnt_destroy (clnt);
 #endif	 /* DEBUG */
 }
 
-airports_ret* airports_prog_1(char *host, location_s *loc)
-{
-	CLIENT *clnt;
-	airports_ret *airportsFromServer;
 
-#ifndef	DEBUG
-	clnt = clnt_create (host, AIRPORTS_PROG, AIRPORTS_VERS, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit (1);
-	}
-#endif	/* DEBUG */
-
-	airportsFromServer = air_qry_1(loc, clnt);
-	if (airportsFromServer == (airports_ret *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-
-#ifndef	DEBUG
-	clnt_destroy (clnt);
-#endif	 /* DEBUG */
-
-  return airportsFromServer;
-}
 
 int main (int argc, char *argv[])
 {
-	char *host;
-
-	if (argc < 2) {
-		printf ("usage: %s server_host\n", argv[0]);
+	if (argc < 4) {
+		printf ("usage: %s places_host city_name state_name\n", argv[0]);
 		exit (1);
 	}
-	host = argv[1];
+	char *host = argv[1];
+	char *city = argv[2];
+	char *state = argv[3];
 
   // Sample test data
-  client_req_t sampleReq;
-  sampleReq.city = "Seattle";
-  sampleReq.state = "wA";
+  places_req req;
+  req.req_type = REQ_NAMED;
+  req.places_req_u.named.name = city;
+  req.places_req_u.named.state = state;
 
-  location_s loc{ 0.5, 0.5 };
-  airports_ret * airportsRet = airports_prog_1(host, &loc);
-
-	//places_prog_1 (host, &sampleReq);
-exit (0);
+	places_prog_1 (host, &req);
 }

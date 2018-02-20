@@ -44,7 +44,7 @@ struct airport {
 };
 
 /* Resulting list of closest airports */
-typedef airports airport[NRESULTS];
+typedef airport airports[NRESULTS];
 
 /* REQUEST + REPLY DATA STRUCTURES */
 /******************************************************************************/
@@ -89,14 +89,22 @@ union airports_ret switch (int err) {
 
 /* PLACES + AIRPORTS IDL programs */
 /******************************************************************************/
-program AIRPORTS_PLACES_PROG {
-    version AIRPORTS_PLACES_VERS {
+program PLACES_PROG {
+    version PLACES_VERS {
         /* Query for a place and return place and list of closest airports */
         places_ret PLACES_QRY(places_req) = 1;
+    } = 1;
+} = 0x3AB0B041;
 
+program AIRPORTS_PROG {
+    version AIRPORTS_VERS {
         /* Query for a lat / long and return closest airports */
         airports_ret AIRPORTS_QRY(location) = 2;
     } = 1;
-} = 0x3AB0B041;
+} = 0x3AB0B042;
+
 /* Note: Program number must start from 2 or 3          */
 /*       To gen a random: $head -c 4 /dev/urandom | xxd */
+
+
+

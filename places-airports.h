@@ -13,71 +13,85 @@
 extern "C" {
 #endif
 
+#define NRESULTS 5
+#define PLACE_NAME_MAX 65
+#define STATE_MAX 3
+#define AIRCODE_MAX 4
+#define ERRMSG_MAX 384
 
-struct location_s {
+#define REQ_NAMED 0
+#define REQ_LAT_LONG 1
+
+struct location {
 	double latitude;
 	double longitude;
 };
-typedef struct location_s location_s;
+typedef struct location location;
 
-struct airport_record_s {
-	location_s loc;
+struct place {
+	char *name;
+	char *state;
+	location loc;
+};
+typedef struct place place;
+
+struct airport {
+	location loc;
+	double dist;
 	char *code;
 	char *name;
 	char *state;
 };
-typedef struct airport_record_s airport_record_s;
+typedef struct airport airport;
 
-struct airp_dist_t {
-	airport_record_s airport;
-	double distance;
+typedef airport airports[NRESULTS];
+
+struct name_state {
+	char *name;
+	char *state;
 };
-typedef struct airp_dist_t airp_dist_t;
+typedef struct name_state name_state;
 
-typedef struct {
-	u_int airp_dist_recs_t_len;
-	airp_dist_t *airp_dist_recs_t_val;
-} airp_dist_recs_t;
-
-struct airports_ret {
-	int err;
+struct places_req {
+	int req_type;
 	union {
-		airp_dist_recs_t airports;
-		char *error_msg;
-	} airports_ret_u;
+		name_state named;
+		location loc;
+	} places_req_u;
 };
-typedef struct airports_ret airports_ret;
+typedef struct places_req places_req;
 
-struct places_result_s {
-	char *place;
-	airp_dist_recs_t airports;
+struct place_airports {
+	place request;
+	airports results;
 };
-typedef struct places_result_s places_result_s;
+typedef struct place_airports place_airports;
 
 struct places_ret {
 	int err;
 	union {
-		places_result_s result;
+		place_airports results;
 		char *error_msg;
 	} places_ret_u;
 };
 typedef struct places_ret places_ret;
 
-struct client_city_state_req_t {
-	char *city;
-	char *state;
+struct airports_ret {
+	int err;
+	union {
+		airports results;
+		char *error_msg;
+	} airports_ret_u;
 };
-typedef struct client_city_state_req_t client_city_state_req_t;
+typedef struct airports_ret airports_ret;
 
-typedef client_city_state_req_t client_req_t;
-
-#define PLACES_PROG 0x32215623
+#define PLACES_PROG 0x3AB0B041
 #define PLACES_VERS 1
 
 #if defined(__STDC__) || defined(__cplusplus)
 #define PLACES_QRY 1
-extern  places_ret * places_qry_1(client_req_t *, CLIENT *);
-extern  places_ret * places_qry_1_svc(client_req_t *, struct svc_req *);
+extern  places_ret * places_qry_1(places_req *, CLIENT *);
+extern  places_ret * places_qry_1_svc(places_req *, struct svc_req *);
 extern int places_prog_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -87,45 +101,45 @@ extern  places_ret * places_qry_1_svc();
 extern int places_prog_1_freeresult ();
 #endif /* K&R C */
 
-#define AIRPORTS_PROG 0x32215624
+#define AIRPORTS_PROG 0x3AB0B042
 #define AIRPORTS_VERS 1
 
 #if defined(__STDC__) || defined(__cplusplus)
-#define AIR_QRY 1
-extern  airports_ret * air_qry_1(location_s *, CLIENT *);
-extern  airports_ret * air_qry_1_svc(location_s *, struct svc_req *);
+#define AIRPORTS_QRY 2
+extern  airports_ret * airports_qry_1(location *, CLIENT *);
+extern  airports_ret * airports_qry_1_svc(location *, struct svc_req *);
 extern int airports_prog_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
-#define AIR_QRY 1
-extern  airports_ret * air_qry_1();
-extern  airports_ret * air_qry_1_svc();
+#define AIRPORTS_QRY 2
+extern  airports_ret * airports_qry_1();
+extern  airports_ret * airports_qry_1_svc();
 extern int airports_prog_1_freeresult ();
 #endif /* K&R C */
 
 /* the xdr functions */
 
 #if defined(__STDC__) || defined(__cplusplus)
-extern  bool_t xdr_location_s (XDR *, location_s*);
-extern  bool_t xdr_airport_record_s (XDR *, airport_record_s*);
-extern  bool_t xdr_airp_dist_t (XDR *, airp_dist_t*);
-extern  bool_t xdr_airp_dist_recs_t (XDR *, airp_dist_recs_t*);
-extern  bool_t xdr_airports_ret (XDR *, airports_ret*);
-extern  bool_t xdr_places_result_s (XDR *, places_result_s*);
+extern  bool_t xdr_location (XDR *, location*);
+extern  bool_t xdr_place (XDR *, place*);
+extern  bool_t xdr_airport (XDR *, airport*);
+extern  bool_t xdr_airports (XDR *, airports);
+extern  bool_t xdr_name_state (XDR *, name_state*);
+extern  bool_t xdr_places_req (XDR *, places_req*);
+extern  bool_t xdr_place_airports (XDR *, place_airports*);
 extern  bool_t xdr_places_ret (XDR *, places_ret*);
-extern  bool_t xdr_client_city_state_req_t (XDR *, client_city_state_req_t*);
-extern  bool_t xdr_client_req_t (XDR *, client_req_t*);
+extern  bool_t xdr_airports_ret (XDR *, airports_ret*);
 
 #else /* K&R C */
-extern bool_t xdr_location_s ();
-extern bool_t xdr_airport_record_s ();
-extern bool_t xdr_airp_dist_t ();
-extern bool_t xdr_airp_dist_recs_t ();
-extern bool_t xdr_airports_ret ();
-extern bool_t xdr_places_result_s ();
+extern bool_t xdr_location ();
+extern bool_t xdr_place ();
+extern bool_t xdr_airport ();
+extern bool_t xdr_airports ();
+extern bool_t xdr_name_state ();
+extern bool_t xdr_places_req ();
+extern bool_t xdr_place_airports ();
 extern bool_t xdr_places_ret ();
-extern bool_t xdr_client_city_state_req_t ();
-extern bool_t xdr_client_req_t ();
+extern bool_t xdr_airports_ret ();
 
 #endif /* K&R C */
 

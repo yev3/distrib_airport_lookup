@@ -6,17 +6,6 @@
 
 #include "places-airports.h"
 
-places_ret *
-places_qry_1_svc(places_req *argp, struct svc_req *rqstp)
-{
-	static places_ret  result;
-
-	/*
-	 * insert server code here
-	 */
-
-	return &result;
-}
 
 airports_ret *
 airports_qry_1_svc(location *argp, struct svc_req *rqstp)

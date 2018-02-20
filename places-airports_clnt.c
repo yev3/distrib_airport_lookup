@@ -10,13 +10,13 @@
 static struct timeval TIMEOUT = { 25, 0 };
 
 places_ret *
-places_qry_1(client_req_t *argp, CLIENT *clnt)
+places_qry_1(places_req *argp, CLIENT *clnt)
 {
 	static places_ret clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	if (clnt_call (clnt, PLACES_QRY,
-		(xdrproc_t) xdr_client_req_t, (caddr_t) argp,
+		(xdrproc_t) xdr_places_req, (caddr_t) argp,
 		(xdrproc_t) xdr_places_ret, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
@@ -25,13 +25,13 @@ places_qry_1(client_req_t *argp, CLIENT *clnt)
 }
 
 airports_ret *
-air_qry_1(location_s *argp, CLIENT *clnt)
+airports_qry_1(location *argp, CLIENT *clnt)
 {
 	static airports_ret clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, AIR_QRY,
-		(xdrproc_t) xdr_location_s, (caddr_t) argp,
+	if (clnt_call (clnt, AIRPORTS_QRY,
+		(xdrproc_t) xdr_location, (caddr_t) argp,
 		(xdrproc_t) xdr_airports_ret, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);

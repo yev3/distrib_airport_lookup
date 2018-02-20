@@ -86,7 +86,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <IncludePath>C:\Users\YK\Source\linux_headers\gcc\include-fixed;C:\Users\YK\Source\linux_headers\gcc\include;C:\Users\YK\Source\linux_headers\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <CLanguageStandard>c99</CLanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

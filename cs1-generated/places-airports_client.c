@@ -7,29 +7,24 @@
 #include "places-airports.h"
 
 
+
 void
-airports_places_prog_1(char *host)
+airports_prog_1(char *host)
 {
 	CLIENT *clnt;
-	places_ret  *result_1;
-	places_req  places_qry_1_arg;
-	airports_ret  *result_2;
+	airports_ret  *result_1;
 	location  airports_qry_1_arg;
 
 #ifndef	DEBUG
-	clnt = clnt_create (host, AIRPORTS_PLACES_PROG, AIRPORTS_PLACES_VERS, "udp");
+	clnt = clnt_create (host, AIRPORTS_PROG, AIRPORTS_VERS, "udp");
 	if (clnt == NULL) {
 		clnt_pcreateerror (host);
 		exit (1);
 	}
 #endif	/* DEBUG */
 
-	result_1 = places_qry_1(&places_qry_1_arg, clnt);
-	if (result_1 == (places_ret *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-	result_2 = airports_qry_1(&airports_qry_1_arg, clnt);
-	if (result_2 == (airports_ret *) NULL) {
+	result_1 = airports_qry_1(&airports_qry_1_arg, clnt);
+	if (result_1 == (airports_ret *) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
 #ifndef	DEBUG
@@ -48,6 +43,7 @@ main (int argc, char *argv[])
 		exit (1);
 	}
 	host = argv[1];
-	airports_places_prog_1 (host);
+	places_prog_1 (host);
+	airports_prog_1 (host);
 exit (0);
 }

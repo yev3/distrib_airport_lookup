@@ -6,7 +6,7 @@
 #include "places-airports.h"
 
 bool_t
-xdr_location_s (XDR *xdrs, location_s *objp)
+xdr_location (XDR *xdrs, location *objp)
 {
 	register int32_t *buf;
 
@@ -18,72 +18,90 @@ xdr_location_s (XDR *xdrs, location_s *objp)
 }
 
 bool_t
-xdr_airport_record_s (XDR *xdrs, airport_record_s *objp)
+xdr_place (XDR *xdrs, place *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_location_s (xdrs, &objp->loc))
+	 if (!xdr_string (xdrs, &objp->name, PLACE_NAME_MAX))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->code, 4))
+	 if (!xdr_string (xdrs, &objp->state, STATE_MAX))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->name, 128))
-		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->state, 3))
+	 if (!xdr_location (xdrs, &objp->loc))
 		 return FALSE;
 	return TRUE;
 }
 
 bool_t
-xdr_airp_dist_t (XDR *xdrs, airp_dist_t *objp)
+xdr_airport (XDR *xdrs, airport *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_airport_record_s (xdrs, &objp->airport))
+	 if (!xdr_location (xdrs, &objp->loc))
 		 return FALSE;
-	 if (!xdr_double (xdrs, &objp->distance))
+	 if (!xdr_double (xdrs, &objp->dist))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->code, AIRCODE_MAX))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->name, PLACE_NAME_MAX))
+		 return FALSE;
+	 if (!xdr_string (xdrs, &objp->state, STATE_MAX))
 		 return FALSE;
 	return TRUE;
 }
 
 bool_t
-xdr_airp_dist_recs_t (XDR *xdrs, airp_dist_recs_t *objp)
+xdr_airports (XDR *xdrs, airports objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_array (xdrs, (char **)&objp->airp_dist_recs_t_val, (u_int *) &objp->airp_dist_recs_t_len, 10,
-		sizeof (airp_dist_t), (xdrproc_t) xdr_airp_dist_t))
+	 if (!xdr_vector (xdrs, (char *)objp, NRESULTS,
+		sizeof (airport), (xdrproc_t) xdr_airport))
 		 return FALSE;
 	return TRUE;
 }
 
 bool_t
-xdr_airports_ret (XDR *xdrs, airports_ret *objp)
+xdr_name_state (XDR *xdrs, name_state *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_int (xdrs, &objp->err))
+	 if (!xdr_string (xdrs, &objp->name, PLACE_NAME_MAX))
 		 return FALSE;
-	switch (objp->err) {
+	 if (!xdr_string (xdrs, &objp->state, STATE_MAX))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_places_req (XDR *xdrs, places_req *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->req_type))
+		 return FALSE;
+	switch (objp->req_type) {
 	case 0:
-		 if (!xdr_airp_dist_recs_t (xdrs, &objp->airports_ret_u.airports))
+		 if (!xdr_name_state (xdrs, &objp->places_req_u.named))
+			 return FALSE;
+		break;
+	case 1:
+		 if (!xdr_location (xdrs, &objp->places_req_u.loc))
 			 return FALSE;
 		break;
 	default:
-		 if (!xdr_string (xdrs, &objp->airports_ret_u.error_msg, 256))
-			 return FALSE;
 		break;
 	}
 	return TRUE;
 }
 
 bool_t
-xdr_places_result_s (XDR *xdrs, places_result_s *objp)
+xdr_place_airports (XDR *xdrs, place_airports *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->place, 128))
+	 if (!xdr_place (xdrs, &objp->request))
 		 return FALSE;
-	 if (!xdr_airp_dist_recs_t (xdrs, &objp->airports))
+	 if (!xdr_airports (xdrs, objp->results))
 		 return FALSE;
 	return TRUE;
 }
@@ -97,11 +115,11 @@ xdr_places_ret (XDR *xdrs, places_ret *objp)
 		 return FALSE;
 	switch (objp->err) {
 	case 0:
-		 if (!xdr_places_result_s (xdrs, &objp->places_ret_u.result))
+		 if (!xdr_place_airports (xdrs, &objp->places_ret_u.results))
 			 return FALSE;
 		break;
 	default:
-		 if (!xdr_string (xdrs, &objp->places_ret_u.error_msg, 256))
+		 if (!xdr_string (xdrs, &objp->places_ret_u.error_msg, ERRMSG_MAX))
 			 return FALSE;
 		break;
 	}
@@ -109,23 +127,21 @@ xdr_places_ret (XDR *xdrs, places_ret *objp)
 }
 
 bool_t
-xdr_client_city_state_req_t (XDR *xdrs, client_city_state_req_t *objp)
+xdr_airports_ret (XDR *xdrs, airports_ret *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_string (xdrs, &objp->city, 65))
+	 if (!xdr_int (xdrs, &objp->err))
 		 return FALSE;
-	 if (!xdr_string (xdrs, &objp->state, 3))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_client_req_t (XDR *xdrs, client_req_t *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_client_city_state_req_t (xdrs, objp))
-		 return FALSE;
+	switch (objp->err) {
+	case 0:
+		 if (!xdr_airports (xdrs, objp->airports_ret_u.results))
+			 return FALSE;
+		break;
+	default:
+		 if (!xdr_string (xdrs, &objp->airports_ret_u.error_msg, ERRMSG_MAX))
+			 return FALSE;
+		break;
+	}
 	return TRUE;
 }

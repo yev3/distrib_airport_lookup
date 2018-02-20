@@ -11,9 +11,6 @@
 #include <memory.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-//#include <rpc/rpc.h>
-#include <tirpc/rpc/rpc.h>
-#include <tirpc/rpc/rpc_com.h>
 
 #ifndef SIG_PF
 #define SIG_PF void(*)(int)
@@ -23,7 +20,7 @@ static void
 airports_prog_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		location_s air_qry_1_arg;
+		location airports_qry_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -34,10 +31,10 @@ airports_prog_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		(void) svc_sendreply (transp, (xdrproc_t) xdr_void, (char *)NULL);
 		return;
 
-	case AIR_QRY:
-		_xdr_argument = (xdrproc_t) xdr_location_s;
+	case AIRPORTS_QRY:
+		_xdr_argument = (xdrproc_t) xdr_location;
 		_xdr_result = (xdrproc_t) xdr_airports_ret;
-		local = (char *(*)(char *, struct svc_req *)) air_qry_1_svc;
+		local = (char *(*)(char *, struct svc_req *)) airports_qry_1_svc;
 		break;
 
 	default:
@@ -66,28 +63,6 @@ main (int argc, char **argv)
 	register SVCXPRT *transp;
 
 	pmap_unset (AIRPORTS_PROG, AIRPORTS_VERS);
-
-  int mode = RPC_SVC_MT_AUTO;
-		int max = 20;      /* Set maximum number of threads to 20 */
- 
-		if (argc > 2) {
-			fprintf(stderr, "usage: %s [nettype]\n", argv[0]);
-			exit(1);
-		}
- 
-		if (argc == 2)
-			nettype = argv[1];
-		else
-			nettype = "netpath";
- 
-		if (!rpc_control(RPC_SVC_MTMODE_SET, &mode)) {
-			printf("RPC_SVC_MTMODE_SET: failed\n");
-			exit(1);
-		}
-		if (!rpc_control(RPC_SVC_THRMAX_SET, &max)) {
-			printf("RPC_SVC_THRMAX_SET: failed\n");
-			exit(1);
-		}
 
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {

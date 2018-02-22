@@ -90,7 +90,7 @@
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <CppLanguageStandard>c++1y</CppLanguageStandard>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

@@ -34,7 +34,12 @@ static std::unique_ptr<PlacesTrie> trie;
 void initTrie(const char *placesPath, const int recordCountHint) {
   log_printf("Loading from file: %s.", placesPath);
   auto places = loadPlacesFromFile(placesPath, recordCountHint);
-  trie = std::make_unique<PlacesTrie>(std::move(places));
+
+  // CS1 only supports c++11, can't use!
+  //trie = std::make_unique<PlacesTrie>(std::move(places));
+
+  trie = std::unique_ptr<PlacesTrie>(new PlacesTrie(std::move(places)));
+
   log_printf("Loaded %d places.", (int)trie->size());
 }
 
@@ -117,7 +122,11 @@ TPlaceRecs loadPlacesFromFile(const char *fName, const size_t approxCount) {
       "Unable to open " + std::string(fName) + " for reading.");
   }
 
-  auto places = std::make_unique<std::vector<CityRecord>>();
+  // CS1 only supports c++11, can't use!
+  //auto places = std::make_unique<std::vector<CityRecord>>();
+
+  auto places = std::unique_ptr<std::vector<CityRecord>>(
+    new std::vector<CityRecord>());
   auto &pl = *places;
   pl.reserve(approxCount);
 

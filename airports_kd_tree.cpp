@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include <cmath>
+#include <cstring>
 
 static std::unique_ptr<AirportKDTree> kdTree;
 
@@ -13,7 +14,13 @@ TAirportRecs loadAirports(const char* path);
 
 void initKD(const char *airportsPath) {
   log_printf("Loading from file: %s.", airportsPath);
-  kdTree = std::make_unique<AirportKDTree>(loadAirports(airportsPath));
+
+  // CS1 only supports c++11, can't use!
+  //kdTree = std::make_unique<AirportKDTree>(loadAirports(airportsPath));
+
+  kdTree = std::unique_ptr<AirportKDTree>(
+    new AirportKDTree(loadAirports(airportsPath)));
+
   log_printf("Loaded %d airports.", (int)kdTree->size());
 }
 
@@ -58,7 +65,7 @@ AirportRecord airportFromLine(std::string &line) {
   name.assign(std::istreambuf_iterator<char>{strm}, {});
   const auto commaIdx = name.rfind(',');
   if (commaIdx != std::string::npos) {
-    state.assign(name, commaIdx + 1);
+    state = name.substr(commaIdx + 1);
     name.erase(commaIdx);
   }
 
@@ -78,7 +85,12 @@ TAirportRecs loadAirports(const char* path) {
     throw std::invalid_argument("Unable to open airports file for reading.");
     //exitMessage("Unable to open '" + std::string(path) + "' for reading.");
 
-  auto airRecs = std::make_unique <std::vector<AirportRecord>>();
+
+  // CS1 only supports c++11, can't use!
+  //auto airRecs = std::make_unique<std::vector<AirportRecord>>();
+
+  auto airRecs = std::unique_ptr<std::vector<AirportRecord>>(
+    new std::vector<AirportRecord>());
 
   std::string line;
   std::getline(airFile, line);  // first line is header
@@ -204,7 +216,7 @@ static std::unique_ptr<KDNode> construct(It fm, It to, int depth) {
       return p1.loc.longitude < p2.loc.longitude;
   };
 
-  const int mid = std::distance(fm, to) / 2;      // Offset to the median node
+  const int mid = (int)(std::distance(fm, to) / 2); // Offset to the med node
 
   // Partition around median node
   if ((depth & 1) == 0) {
@@ -214,9 +226,16 @@ static std::unique_ptr<KDNode> construct(It fm, It to, int depth) {
   }
 
   // Create a subtree with the value of median and children of partitions
-  return std::make_unique<KDNode>(*(fm + mid),
-                                  construct(fm, fm + mid, depth + 1),
-                                  construct(fm + mid + 1, to, depth + 1));
+
+  // CS1 only supports c++11, can't use!
+  //return std::make_unique<KDNode>(*(fm + mid),
+  //                                construct(fm, fm + mid, depth + 1),
+  //                                construct(fm + mid + 1, to, depth + 1));
+
+  return std::unique_ptr<KDNode>(
+    new KDNode(*(fm + mid),
+               construct(fm, fm + mid, depth + 1),
+               construct(fm + mid + 1, to, depth + 1)));
 }
 
 void kClosestPimpl(const std::unique_ptr<KDNode> &node,
@@ -225,8 +244,8 @@ void kClosestPimpl(const std::unique_ptr<KDNode> &node,
                    std::vector<DistAirport> &closest) {
   if (!node) return;                      // Base case
 
-  location nloc = node->airport.loc;      // Alias for readability
-  double dist = distance(nloc, target);   // Great circ dist to node in miles
+  location nloc = node->airport.loc;              // Alias for readability
+  double dist = (double)distance(nloc, target);   // Great circ dist in miles
 
 
   // Collect the current node when it belongs in closest k set
@@ -256,7 +275,7 @@ void kClosestPimpl(const std::unique_ptr<KDNode> &node,
   } else {
     nloc.latitude = target.latitude;
   }
-  const double planeMinDist = distance(nloc, target);
+  const double planeMinDist = (double)distance(nloc, target);
   const bool planeIntersects = planeMinDist < closest.back().dist;
 
   // Search farther side of div plane when intersects or have not filled k

@@ -6,6 +6,7 @@
 
 #include "places_trie.h"
 #include <cctype>
+#include <cctype>
 #include <algorithm>
 #include <fstream>
 
@@ -34,7 +35,12 @@ static std::unique_ptr<PlacesTrie> trie;
 void initTrie(const char *placesPath, const int recordCountHint) {
   log_printf("Loading from file: %s.", placesPath);
   auto places = loadPlacesFromFile(placesPath, recordCountHint);
-  trie = std::make_unique<PlacesTrie>(std::move(places));
+
+  // CS1 only supports c++11, can't use!
+  //trie = std::make_unique<PlacesTrie>(std::move(places));
+
+  trie = std::unique_ptr<PlacesTrie>(new PlacesTrie(std::move(places)));
+
   log_printf("Loaded %d places.", (int)trie->size());
 }
 
@@ -54,10 +60,10 @@ TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
 
   // Filter the results more, looking for exact st match (erase-remove idom)
   TFoundPlaces &pl = result.places;
-  pl.erase(std::remove_if(pl.begin(), pl.end(), [=](const auto &e) {
+  pl.erase(std::remove_if(pl.begin(), pl.end(), 
+    [=](const std::reference_wrapper<const CityRecord> &e) {
              return strcasecmp(e.get().state.c_str(), state.c_str()) != 0;
-           }),
-           pl.cend());
+  }));
 
   return result;
 }
@@ -66,8 +72,8 @@ TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
 /******************************************************************************/
 
 inline std::string& trimRight(std::string& s) {
-  const auto trimEnd =
-    std::find_if_not(s.crbegin(), s.crend(), [](const unsigned char &c) {
+  const std::string::iterator trimEnd =
+    std::find_if_not(s.rbegin(), s.rend(), [](const unsigned char &c) {
       return std::isspace(c);
     }).base();
   s.erase(trimEnd, s.end());
@@ -76,12 +82,12 @@ inline std::string& trimRight(std::string& s) {
 
 inline std::string removeLastWord(std::string& s) {
   trimRight(s);
-  const auto fstSpace =
-    std::find_if(s.crbegin(), s.crend(), [](auto &c) {
+  const std::string::iterator fstSpace =
+    std::find_if(s.rbegin(), s.rend(), [](const char &c) {
       return std::isspace(c);
   }).base();
-  std::string word(fstSpace, s.cend());
-  s.erase(fstSpace, s.end());
+  std::string word(fstSpace, s.end());
+  s.erase(fstSpace);
   trimRight(s);
   return word;
 }
@@ -117,7 +123,11 @@ TPlaceRecs loadPlacesFromFile(const char *fName, const size_t approxCount) {
       "Unable to open " + std::string(fName) + " for reading.");
   }
 
-  auto places = std::make_unique<std::vector<CityRecord>>();
+  // CS1 only supports c++11, can't use!
+  //auto places = std::make_unique<std::vector<CityRecord>>();
+
+  auto places = std::unique_ptr<std::vector<CityRecord>>(
+    new std::vector<CityRecord>());
   auto &pl = *places;
   pl.reserve(approxCount);
 
@@ -144,7 +154,7 @@ TPlaceRecs loadPlacesFromFile(const char *fName, const size_t approxCount) {
 
 PlacesTrie::PlacesTrie(TPlaceRecs cityRecords) :
   places(std::move(cityRecords)), root(0) {
-  construct(0, places->size(), 0, root);
+  construct(0, (int)places->size(), 0, root);
 }
 
 TrieQueryResult 
@@ -163,7 +173,7 @@ TrieQueryResult PlacesTrie::query(const std::string &cname,
   if ((int)cname.size() == depth) return getFirstCompletion(node);
 
   // Binary search on the next nodes to see if next char is in trie
-  const char c = std::tolower(cname[depth]);
+  const char c = (char)std::tolower(cname[depth]);
   const auto it = std::lower_bound(node.next.begin(), node.next.end(), c,
                                    [](const TrieNode &tn, const char ch) {
                                      return tn.c < ch;
@@ -239,7 +249,7 @@ void PlacesTrie::construct(const int begin, const int end,
     // End of the subrange being constructed
     const int nextEnd = endOfSameLetterRange(idx, end, depth);
 
-    const char c = std::tolower((*places)[idx].cityName[depth]);
+    const char c = (char)std::tolower((*places)[idx].cityName[depth]);
     if (c == '\0') {
       // Save the range of entries with same value
       node.idxRange = {idx, nextEnd};
@@ -255,7 +265,7 @@ void PlacesTrie::construct(const int begin, const int end,
 
 int PlacesTrie::endOfSameLetterRange(const int fm, const int to,
                                      const size_t depth) const {
-  const char c = std::tolower((*places)[fm].cityName[depth]);
+  const char c = (char)std::tolower((*places)[fm].cityName[depth]);
   for (int i = fm + 1; i < to; ++i) {
     if (std::tolower((*places)[i].cityName[depth]) != c)
       return i;

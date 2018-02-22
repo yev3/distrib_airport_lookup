@@ -61,10 +61,10 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\YK\Source\linux_headers\gcc\include-fixed;C:\Users\YK\Source\linux_headers\gcc\include;C:\Users\YK\Source\linux_headers\include;$(IncludePath);$(ISenseIncludePath)</IncludePath>
+    <IncludePath>C:\Users\YK\Source\cs1_headers\include;C:\Users\YK\Source\cs1_headers\gcc\include;C:\Users\YK\Source\cs1_headers\include\c++\4.8.5;$(IncludePath);$(ISenseIncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\YK\Source\linux_headers\gcc\include-fixed;C:\Users\YK\Source\linux_headers\gcc\include;C:\Users\YK\Source\linux_headers\include;$(IncludePath);$(ISenseIncludePath)</IncludePath>
+    <IncludePath>C:\Users\YK\Source\cs1_headers\include;C:\Users\YK\Source\cs1_headers\gcc\include;C:\Users\YK\Source\cs1_headers\include\c++\4.8.5;$(IncludePath);$(ISenseIncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="airports_kd_tree.cpp" />
@@ -82,16 +82,21 @@
     <Text Include="airport-locations.txt">
       <RemoteCopyToOutputDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</RemoteCopyToOutputDir>
       <RemoteCopyToOutputDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</RemoteCopyToOutputDir>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </Text>
     <Text Include="places2k.txt">
       <RemoteCopyToOutputDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</RemoteCopyToOutputDir>
       <RemoteCopyToOutputDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</RemoteCopyToOutputDir>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
     </Text>
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <CppLanguageStandard>c++1y</CppLanguageStandard>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>_WIN32;_WIN64;</UndefinePreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -233,7 +233,7 @@ int main(int argc, char **argv) {
     std::stringstream strm(line);
     std::string city;
     std::string state;
-    strm >> std::quoted(city);
+    strm >> city;
     req.req_type = city == "-l" ?  REQ_LAT_LONG : REQ_NAMED;
     if (req.req_type == REQ_NAMED) {
       strm >> state;

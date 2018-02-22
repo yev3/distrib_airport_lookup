@@ -1,6 +1,6 @@
 /*****************************************************************************
  * Yevgeni Kamenski
- * CPSC 5520 Distributed Systems, Seattle University, 2017
+ * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
  *****************************************************************************/
 
@@ -32,14 +32,19 @@ TPlaceRecs loadPlacesFromFile(const char *fName, const size_t approxCount);
 // State shared between two public api methods
 static std::unique_ptr<PlacesTrie> trie;
 
-void initTrie(const char *placesPath, const int recordCountHint) {
+void initTrie(const char *placesPath) {
   log_printf("Loading from file: %s.", placesPath);
-  auto places = loadPlacesFromFile(placesPath, recordCountHint);
+  try {
+    TPlaceRecs places = loadPlacesFromFile(placesPath, 20000);
 
-  // CS1 only supports c++11, can't use!
-  //trie = std::make_unique<PlacesTrie>(std::move(places));
+    // CS1 only supports c++11, can't use!
+    //trie = std::make_unique<PlacesTrie>(std::move(places));
 
-  trie = std::unique_ptr<PlacesTrie>(new PlacesTrie(std::move(places)));
+    trie = std::unique_ptr<PlacesTrie>(new PlacesTrie(std::move(places)));
+  }
+  catch (const std::exception &e) {
+    exitWithMessage(e.what());
+  }
 
   log_printf("Loaded %d places.", (int)trie->size());
 }
@@ -60,10 +65,12 @@ TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
 
   // Filter the results more, looking for exact st match (erase-remove idom)
   TFoundPlaces &pl = result.places;
-  pl.erase(std::remove_if(pl.begin(), pl.end(), 
-    [=](const std::reference_wrapper<const CityRecord> &e) {
-             return strcasecmp(e.get().state.c_str(), state.c_str()) != 0;
-  }));
+  pl.erase(std::remove_if(
+             pl.begin(), pl.end(),
+             [=](const std::reference_wrapper<const CityRecord> &e) {
+               return strcasecmp(e.get().state.c_str(),
+                                 state.c_str()) != 0;
+  }), pl.end());
 
   return result;
 }
@@ -87,13 +94,13 @@ inline std::string removeLastWord(std::string& s) {
       return std::isspace(c);
   }).base();
   std::string word(fstSpace, s.end());
-  s.erase(fstSpace);
+  s.erase(fstSpace, s.end());
   trimRight(s);
   return word;
 }
 
 CityRecord cityRecordFromLine(const std::string &line) {
-  if (line.size() != 164) {
+  if (!(164 < line.size() || line.size() < 165)) {
     throw std::invalid_argument(
       "Places file is mangled, each line needs to be 164 chars"
     );

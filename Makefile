@@ -9,14 +9,21 @@ PROJ_OBJECTS = $(addsuffix .o,$(basename $(wildcard *.c *.cpp)))
 PROJ_HEADERS = $(wildcard *.h)
 
 all : client places_server airports_server
-all : CXXFLAGS += -O3
-all : CFLAGS += -O3
+all : CXXFLAGS += -O3 -DNDEBUG
+all : CFLAGS += -O3 -DNDEBUG
 
-client : test-main.o common.o places_trie.o airports_kd_tree.o -lnsl
+debug: client places_server airports_server
 
-# places_server : listdir_client.o listdir_clnt.o listdir_xdr.o -lnsl
+# client : test-main.o common.o places_trie.o airports_kd_tree.o -lnsl
 
-# airports_server : listdir_server.o listdir_svc.o listdir_xdr.o -lnsl
+client : client_main.o common.o places_trie.o airports_kd_tree.o places-airports_clnt.o places-airports_xdr.o -lnsl
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+places_server : places_server.o places_trie.o common.o places_server_svc.o places-airports_clnt.o places-airports_xdr.o -lnsl
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+airports_server : airports_server.o airports_server_svc.o airports_kd_tree.o common.o places-airports_xdr.o -lnsl
+	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 # Header dependencies in the project
 common.o : common.h
@@ -25,7 +32,7 @@ places_trie.o : places_trie.h
 airports_server.o places_server.o places-airports_clnt.o : places-airports.h
 places-airports_xdr.o airports_server_svc.o places_server_svc.o : places-airports.h
 
-test-main.o : $(PROJ_PEADERS)
+test-main.o : $(PROJ_HEADERS)
 
 
 clean:

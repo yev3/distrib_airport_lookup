@@ -1,8 +1,11 @@
 #!/bin/bash
-systemctl start rpcbind
+# systemctl start rpcbind
 pkill -f places_server
 pkill -f airports_server
-pause 0.5
+sleep 0.5
 ./airports_server &
-pause 0.5
+sleep 0.5
+./places_server localhost &
+sleep 0.5
+./client localhost seattle wa
 

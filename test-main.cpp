@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
   const char* airportsPath = "airport-locations.txt";
 
   try {
-    initTrie(placesPath, placesCountHint);
+    initTrie(placesPath);
     initKD(airportsPath);
   }
   catch (const std::exception &e) {

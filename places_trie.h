@@ -1,3 +1,8 @@
+/*****************************************************************************
+ * Yevgeni Kamenski
+ * CPSC 5520 Distributed Systems, Seattle University, 2018
+ * Project #2: A Three-Tiered Airport Lookup System
+ *****************************************************************************/
 #pragma once
 
 #include "common.h"
@@ -18,9 +23,9 @@ struct TrieQueryResult {
  * \brief Initializes the trie lookup data structure with given data. 
  * Throws on IO/file format error.
  * \param placesPath Path to the places file to load
- * \param recordCountHint Approx #records, shrinks to fit at end.
  */
-void initTrie(const char* placesPath, const int recordCountHint);
+extern "C" 
+void initTrie(const char* placesPath);
 
 /**
  * \brief Performs an efficient prefix completion lookup using a Trie data

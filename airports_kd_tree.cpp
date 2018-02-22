@@ -1,4 +1,11 @@
+/*****************************************************************************
+ * Yevgeni Kamenski
+ * CPSC 5520 Distributed Systems, Seattle University, 2018
+ * Project #2: A Three-Tiered Airport Lookup System
+ *****************************************************************************/
+
 #include "airports_kd_tree.h"
+#include "common.h"
 
 #include <algorithm>
 #include <sstream>
@@ -7,19 +14,26 @@
 #include <cmath>
 #include <cstring>
 
+// Tree shared between calls in this module
 static std::unique_ptr<AirportKDTree> kdTree;
 
 // Helper to load airports from file. Throws on IO/parse error.
 TAirportRecs loadAirports(const char* path);
 
+// Implementations of public interface methods to init and search
+/******************************************************************************/
+
 void initKD(const char *airportsPath) {
-  log_printf("Loading from file: %s.", airportsPath);
+  try {
+    // CS1 only supports c++11, can't use!
+    //kdTree = std::make_unique<AirportKDTree>(loadAirports(airportsPath));
 
-  // CS1 only supports c++11, can't use!
-  //kdTree = std::make_unique<AirportKDTree>(loadAirports(airportsPath));
-
-  kdTree = std::unique_ptr<AirportKDTree>(
-    new AirportKDTree(loadAirports(airportsPath)));
+    kdTree = std::unique_ptr<AirportKDTree>(
+      new AirportKDTree(loadAirports(airportsPath)));
+  }
+  catch (const std::exception& e ) {
+    exitWithMessage(e.what());
+  }
 
   log_printf("Loaded %d airports.", (int)kdTree->size());
 }
@@ -45,6 +59,9 @@ airport * kd5Closest(const location target) {
   
   return &result[0];
 }
+
+// Helpers implementations
+/******************************************************************************/
 
 /**
  * \brief Constructs an AirportRecord from a data file line.
@@ -105,7 +122,6 @@ TAirportRecs loadAirports(const char* path) {
   airRecs->shrink_to_fit();
   return airRecs;
 }
-
 
 // Forward declaration of the helper routines + classes in this file
 /******************************************************************************/

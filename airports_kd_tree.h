@@ -1,9 +1,17 @@
+/*****************************************************************************
+ * Yevgeni Kamenski
+ * CPSC 5520 Distributed Systems, Seattle University, 2018
+ * Project #2: A Three-Tiered Airport Lookup System
+ *****************************************************************************/
 #pragma once
 #include "common.h"
 #include <memory>
 
 /** Type of collection of airports loaded from the airports file */
 using TAirportRecs = std::unique_ptr<std::vector<AirportRecord>>;
+
+// Public interface methods to init and search
+/******************************************************************************/
 
 /**
  * \brief Initializes the kd tree data structure with given data. 

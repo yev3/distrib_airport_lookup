@@ -1,3 +1,8 @@
+/*****************************************************************************
+ * Yevgeni Kamenski
+ * CPSC 5520 Distributed Systems, Seattle University, 2018
+ * Project #2: A Three-Tiered Airport Lookup System
+ *****************************************************************************/
 #pragma once
 #include "places-airports.h"
 #include <iostream>
@@ -5,7 +10,7 @@
 #include <vector>
 #include <memory>
 
-// 
+// Logging helper
 /******************************************************************************/
 
 #ifndef NDEBUG
@@ -13,7 +18,7 @@
         do { fprintf(stderr, "[%s()]: " fmt "\n", \
                      __func__, __VA_ARGS__); } while (0)
 #else
-#define log_printf(X)
+#define log_printf(X, ...)
 #endif
 
 // Case-insensitive comparison

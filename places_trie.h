@@ -24,8 +24,7 @@ struct TrieQueryResult {
  * Throws on IO/file format error.
  * \param placesPath Path to the places file to load
  */
-extern "C" 
-void initTrie(const char* placesPath);
+extern "C" void initTrie(const char* placesPath);
 
 /**
  * \brief Performs an efficient prefix completion lookup using a Trie data

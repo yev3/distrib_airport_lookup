@@ -56,7 +56,7 @@ airport * kd5Closest(const location target) {
     result[i].state = (char*)airp.state.c_str();
     result[i].loc = airp.loc;
   }
-  
+
   return &result[0];
 }
 

@@ -1,11 +1,20 @@
 #!/bin/bash
-# systemctl start rpcbind
+
 pkill -f places_server
 pkill -f airports_server
-sleep 0.5
+
+echo "Building.."
+make
+
+echo "Launching airports_server.."
 ./airports_server &
 sleep 0.5
+
+echo "Launching places_server.."
 ./places_server localhost &
 sleep 0.5
+
+echo "Executing test query.."
 ./client localhost seattle wa
 
+echo "Note: airports_server and places_server are still running."

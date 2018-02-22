@@ -6,6 +6,7 @@
 
 #include "places_trie.h"
 #include <cctype>
+#include <cctype>
 #include <algorithm>
 #include <fstream>
 
@@ -62,8 +63,7 @@ TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
   pl.erase(std::remove_if(pl.begin(), pl.end(), 
     [=](const std::reference_wrapper<const CityRecord> &e) {
              return strcasecmp(e.get().state.c_str(), state.c_str()) != 0;
-           }),
-           pl.cend());
+  }));
 
   return result;
 }
@@ -72,8 +72,8 @@ TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
 /******************************************************************************/
 
 inline std::string& trimRight(std::string& s) {
-  const auto trimEnd =
-    std::find_if_not(s.crbegin(), s.crend(), [](const unsigned char &c) {
+  const std::string::iterator trimEnd =
+    std::find_if_not(s.rbegin(), s.rend(), [](const unsigned char &c) {
       return std::isspace(c);
     }).base();
   s.erase(trimEnd, s.end());
@@ -82,12 +82,12 @@ inline std::string& trimRight(std::string& s) {
 
 inline std::string removeLastWord(std::string& s) {
   trimRight(s);
-  const auto fstSpace =
-    std::find_if(s.crbegin(), s.crend(), [](const char &c) {
+  const std::string::iterator fstSpace =
+    std::find_if(s.rbegin(), s.rend(), [](const char &c) {
       return std::isspace(c);
   }).base();
-  std::string word(fstSpace, s.cend());
-  s.erase(fstSpace, s.end());
+  std::string word(fstSpace, s.end());
+  s.erase(fstSpace);
   trimRight(s);
   return word;
 }

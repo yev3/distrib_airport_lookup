@@ -57,9 +57,22 @@ airports_prog_1(struct svc_req *rqstp, register SVCXPRT *transp)
 	return;
 }
 
+
+extern void initKD(const char* airportsPath);
+
 int
 main (int argc, char **argv)
 {
+  char* airportsPath;
+  if (argc < 2) {
+    printf("airports path not specified, using `airport-locations.txt`\n");
+    airportsPath = "airport-locations.txt";
+  } else {
+    airportsPath = argv[1];
+  }
+
+  initKD(airportsPath);
+
 	register SVCXPRT *transp;
 
 	pmap_unset (AIRPORTS_PROG, AIRPORTS_VERS);

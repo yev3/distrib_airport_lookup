@@ -10,7 +10,7 @@ using TAirportRecs = std::unique_ptr<std::vector<AirportRecord>>;
  * Throws on IO/file format error.
  * \param airportsPath Path to the airports file to load
  */
-void initKD(const char* airportsPath);
+extern "C" void initKD(const char* airportsPath);
 
 /**
  * \brief Performs a k-NN lookup to get 5 closest airports. 

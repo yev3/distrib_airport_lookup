@@ -1,0 +1,8 @@
+#!/bin/bash
+systemctl start rpcbind
+pkill -f places_server
+pkill -f airports_server
+pause 0.5
+./airports_server &
+pause 0.5
+

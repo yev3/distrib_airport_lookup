@@ -27,14 +27,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="airports_kd_tree.cpp" />
     <ClCompile Include="airports_server.cpp">
       <CppLanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c++1y</CppLanguageStandard>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
     <ClCompile Include="airports_server_svc.c" />
+    <ClCompile Include="common.cpp" />
     <ClCompile Include="places-airports_xdr.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="airports_kd_tree.h" />
+    <ClInclude Include="common.h" />
     <ClInclude Include="places-airports.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

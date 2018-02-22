@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "places", "places.vcxproj", "{D4B4DAC9-307F-49C6-98AE-1074818AB54E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test-all", "test-all.vcxproj", "{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -55,6 +57,18 @@ Global
 		{D4B4DAC9-307F-49C6-98AE-1074818AB54E}.Release|x64.Build.0 = Release|x64
 		{D4B4DAC9-307F-49C6-98AE-1074818AB54E}.Release|x86.ActiveCfg = Release|x86
 		{D4B4DAC9-307F-49C6-98AE-1074818AB54E}.Release|x86.Build.0 = Release|x86
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Debug|ARM.Build.0 = Debug|ARM
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Debug|x64.ActiveCfg = Debug|x64
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Debug|x64.Build.0 = Debug|x64
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Debug|x86.ActiveCfg = Debug|x86
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Debug|x86.Build.0 = Debug|x86
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Release|ARM.ActiveCfg = Release|ARM
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Release|ARM.Build.0 = Release|ARM
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Release|x64.ActiveCfg = Release|x64
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Release|x64.Build.0 = Release|x64
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Release|x86.ActiveCfg = Release|x86
+		{93EAF598-9A93-4F4E-804E-7EA96A8ED52A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

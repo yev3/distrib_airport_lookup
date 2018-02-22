@@ -1,7 +1,10 @@
 #include "airports_kd_tree.h"
+
 #include <algorithm>
 #include <sstream>
 #include <fstream>
+
+#include <cmath>
 
 static std::unique_ptr<AirportKDTree> kdTree;
 
@@ -11,7 +14,7 @@ TAirportRecs loadAirports(const char* path);
 void initKD(const char *airportsPath) {
   log_printf("Loading from file: %s.", airportsPath);
   kdTree = std::make_unique<AirportKDTree>(loadAirports(airportsPath));
-  log_printf("Loaded %d airports.", kdTree->size());
+  log_printf("Loaded %d airports.", (int)kdTree->size());
 }
 
 airport * kd5Closest(const location target) {

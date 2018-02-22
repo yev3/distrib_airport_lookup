@@ -35,7 +35,7 @@ void initTrie(const char *placesPath, const int recordCountHint) {
   log_printf("Loading from file: %s.", placesPath);
   auto places = loadPlacesFromFile(placesPath, recordCountHint);
   trie = std::make_unique<PlacesTrie>(std::move(places));
-  log_printf("Loaded %d places.", trie->size());
+  log_printf("Loaded %d places.", (int)trie->size());
 }
 
 TrieQueryResult queryPlace(const std::string &city, const std::string &state) {

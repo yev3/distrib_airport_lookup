@@ -61,7 +61,7 @@ void parseArgs(int argc, char **argv, char **host, places_req &req) {
 
   if (!isLatLongQuery) {
     req.places_req_u.named.name = argv[1];
-    req.places_req_u.named.state = (argc == 3) ? argv[2] : "";
+    req.places_req_u.named.state = (argc == 3) ? argv[2] : (char*)"";
   } else {
     double latitude;
     double longitude;

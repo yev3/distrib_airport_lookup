@@ -216,7 +216,7 @@ static std::unique_ptr<KDNode> construct(It fm, It to, int depth) {
       return p1.loc.longitude < p2.loc.longitude;
   };
 
-  const int mid = std::distance(fm, to) / 2;      // Offset to the median node
+  const int mid = (int)(std::distance(fm, to) / 2); // Offset to the med node
 
   // Partition around median node
   if ((depth & 1) == 0) {
@@ -244,8 +244,8 @@ void kClosestPimpl(const std::unique_ptr<KDNode> &node,
                    std::vector<DistAirport> &closest) {
   if (!node) return;                      // Base case
 
-  location nloc = node->airport.loc;      // Alias for readability
-  double dist = distance(nloc, target);   // Great circ dist to node in miles
+  location nloc = node->airport.loc;              // Alias for readability
+  double dist = (double)distance(nloc, target);   // Great circ dist in miles
 
 
   // Collect the current node when it belongs in closest k set
@@ -275,7 +275,7 @@ void kClosestPimpl(const std::unique_ptr<KDNode> &node,
   } else {
     nloc.latitude = target.latitude;
   }
-  const double planeMinDist = distance(nloc, target);
+  const double planeMinDist = (double)distance(nloc, target);
   const bool planeIntersects = planeMinDist < closest.back().dist;
 
   // Search farther side of div plane when intersects or have not filled k

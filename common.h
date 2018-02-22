@@ -97,7 +97,7 @@ struct DistAirport {
 
 std::ostream &operator<<(std::ostream &strm, const location &loc);
 
-std::ostream &operator<<(std::ostream &strm, const place &pl);;
+std::ostream &operator<<(std::ostream &strm, const place &pl);
 
 std::ostream &operator<<(std::ostream &strm, const places_ret &plRet);
 

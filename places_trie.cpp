@@ -59,7 +59,8 @@ TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
 
   // Filter the results more, looking for exact st match (erase-remove idom)
   TFoundPlaces &pl = result.places;
-  pl.erase(std::remove_if(pl.begin(), pl.end(), [=](const auto &e) {
+  pl.erase(std::remove_if(pl.begin(), pl.end(), 
+    [=](const std::reference_wrapper<const CityRecord> &e) {
              return strcasecmp(e.get().state.c_str(), state.c_str()) != 0;
            }),
            pl.cend());
@@ -82,7 +83,7 @@ inline std::string& trimRight(std::string& s) {
 inline std::string removeLastWord(std::string& s) {
   trimRight(s);
   const auto fstSpace =
-    std::find_if(s.crbegin(), s.crend(), [](auto &c) {
+    std::find_if(s.crbegin(), s.crend(), [](const char &c) {
       return std::isspace(c);
   }).base();
   std::string word(fstSpace, s.cend());
@@ -153,7 +154,7 @@ TPlaceRecs loadPlacesFromFile(const char *fName, const size_t approxCount) {
 
 PlacesTrie::PlacesTrie(TPlaceRecs cityRecords) :
   places(std::move(cityRecords)), root(0) {
-  construct(0, places->size(), 0, root);
+  construct(0, (int)places->size(), 0, root);
 }
 
 TrieQueryResult 
@@ -172,7 +173,7 @@ TrieQueryResult PlacesTrie::query(const std::string &cname,
   if ((int)cname.size() == depth) return getFirstCompletion(node);
 
   // Binary search on the next nodes to see if next char is in trie
-  const char c = std::tolower(cname[depth]);
+  const char c = (char)std::tolower(cname[depth]);
   const auto it = std::lower_bound(node.next.begin(), node.next.end(), c,
                                    [](const TrieNode &tn, const char ch) {
                                      return tn.c < ch;
@@ -248,7 +249,7 @@ void PlacesTrie::construct(const int begin, const int end,
     // End of the subrange being constructed
     const int nextEnd = endOfSameLetterRange(idx, end, depth);
 
-    const char c = std::tolower((*places)[idx].cityName[depth]);
+    const char c = (char)std::tolower((*places)[idx].cityName[depth]);
     if (c == '\0') {
       // Save the range of entries with same value
       node.idxRange = {idx, nextEnd};
@@ -264,7 +265,7 @@ void PlacesTrie::construct(const int begin, const int end,
 
 int PlacesTrie::endOfSameLetterRange(const int fm, const int to,
                                      const size_t depth) const {
-  const char c = std::tolower((*places)[fm].cityName[depth]);
+  const char c = (char)std::tolower((*places)[fm].cityName[depth]);
   for (int i = fm + 1; i < to; ++i) {
     if (std::tolower((*places)[i].cityName[depth]) != c)
       return i;

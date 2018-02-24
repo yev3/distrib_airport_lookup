@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 	if (!svc_register(transp, PLACES_PROG, PLACES_VERS,
-                    (void (*)())(places_prog_1), IPPROTO_UDP)) {
+                    	  places_prog_1, IPPROTO_UDP)) {
 		fprintf (stderr, "%s", "unable to register (PLACES_PROG, PLACES_VERS, udp).");
 		exit(1);
 	}
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
 		exit(1);
 	}
 	if (!svc_register(transp, PLACES_PROG, PLACES_VERS,
-                    (void (*)())(places_prog_1), IPPROTO_TCP)) {
+                         places_prog_1, IPPROTO_TCP)) {
 		fprintf (stderr, "%s", "unable to register (PLACES_PROG, PLACES_VERS, tcp).");
 		exit(1);
 	}

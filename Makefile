@@ -16,7 +16,7 @@ all : CFLAGS += -O3 -DNDEBUG
 
 debug: client places_server airports_server
 
-client : client_main.o $(COMMON_FUNCT)
+client : places_client.o $(COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 places_server : places_server.o places_trie.o $(COMMON_FUNCT)

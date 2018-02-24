@@ -2,6 +2,8 @@
  * Yevgeni Kamenski
  * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
+ *
+ * Places server client.
  *****************************************************************************/
 
 #include "places_airports.h"
@@ -15,68 +17,14 @@ const char *programUsage[] = {
   "       client <places-host> <city> [state]",
   "",
   "       Use -p flag to search by latitude / longitude:",
-  "       client -p <places-host> \"<latitude>\" \"<longitude>\"",
+R"(       client -p <places-host> "<latitude>" "<longitude>")",
 };
 
-void showUsageAndExit() {
-  for (const char *line : programUsage) {
-    std::cerr << line << std::endl;
-  }
-  exit(1);
-}
+// Exit the program, showing usage.
+void showUsageAndExit();
 
-void parseArgs(int argc, char **argv, char **host, places_req &req) {
-  bool isLatLongQuery = false;
-
-  int c;
-  while ((c = getopt(argc, argv, "p")) != -1) {
-    switch (c) {
-    case 'p':
-      isLatLongQuery = true;
-      break;
-    case '?':
-      if (isprint(optopt))
-        std::cerr << "Unknown option '-" << (char)optopt << "'.\n";
-      else
-        std::cerr << "Unknown option char '" << std::hex << optopt << "'.\n";
-      showUsageAndExit();
-      break;
-    default:
-      abort();
-    }
-  }
-
-  argc -= optind;
-  argv += optind;
-
-  if (argc < 2 || 3 < argc ||
-      (isLatLongQuery && argc != 3)) {
-    showUsageAndExit();
-  }
-
-  req.req_type = isLatLongQuery ? REQ_LAT_LONG : REQ_NAMED;
-
-  *host = argv[0];
-
-  if (!isLatLongQuery) {
-    req.places_req_u.named.name = argv[1];
-    req.places_req_u.named.state = (argc == 3) ? argv[2] : (char*)"";
-  } else {
-    double latitude;
-    double longitude;
-    try {
-      latitude = std::stod(argv[1]);
-      longitude = std::stod(argv[2]);
-    }
-    catch (...) {
-      std::cerr << "Invalid latitude / longitude argument." << std::endl;
-      exit(1);
-    }
-    req.places_req_u.loc.latitude = latitude;
-    req.places_req_u.loc.longitude = longitude;
-  }
-}
-
+// Helper to parse user's arguments into host and request object given.
+void parseArgs(int argc, char **argv, char **host, places_req &req);
 
 int main (int argc, char *argv[])
 {
@@ -109,4 +57,63 @@ int main (int argc, char *argv[])
 	clnt_destroy (clnt);
 
   exit(0);
+}
+
+void showUsageAndExit() {
+  for (const char *line : programUsage) {
+    std::cerr << line << std::endl;
+  }
+  exit(1);
+}
+
+void parseArgs(int argc, char **argv, char **host, places_req &req) {
+  bool isLatLongQuery = false;
+
+  int c;
+  while ((c = getopt(argc, argv, "p")) != -1) {
+    switch (c) {
+      case 'p':
+        isLatLongQuery = true;
+        break;
+      case '?':
+        if (isprint(optopt))
+          std::cerr << "Unknown option '-" << (char)optopt << "'.\n";
+        else
+          std::cerr << "Unknown option char '" << std::hex << optopt << "'.\n";
+        showUsageAndExit();
+        break;
+      default:
+        abort();
+    }
+  }
+
+  argc -= optind;
+  argv += optind;
+
+  if (argc < 2 || 3 < argc ||
+      (isLatLongQuery && argc != 3)) {
+    showUsageAndExit();
+  }
+
+  req.req_type = isLatLongQuery ? REQ_LAT_LONG : REQ_NAMED;
+
+  *host = argv[0];
+
+  if (!isLatLongQuery) {
+    req.places_req_u.named.name = argv[1];
+    req.places_req_u.named.state = (argc == 3) ? argv[2] : (char*)"";
+  } else {
+    double latitude;
+    double longitude;
+    try {
+      latitude = std::stod(argv[1]);
+      longitude = std::stod(argv[2]);
+    }
+    catch (...) {
+      std::cerr << "Invalid latitude / longitude argument." << std::endl;
+      exit(1);
+    }
+    req.places_req_u.loc.latitude = latitude;
+    req.places_req_u.loc.longitude = longitude;
+  }
 }

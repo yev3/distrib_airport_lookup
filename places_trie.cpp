@@ -2,6 +2,8 @@
  * Yevgeni Kamenski
  * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
+ *
+ * Trie build and lookup implementation.
  *****************************************************************************/
 
 #include "places_trie.h"

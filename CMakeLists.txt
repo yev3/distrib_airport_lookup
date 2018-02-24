@@ -13,7 +13,7 @@ set(COMMON_FUNCT
 )
 
 add_executable(client
-    client_main.cpp
+        places_client.cpp
     ${COMMON_FUNCT}
 )
 

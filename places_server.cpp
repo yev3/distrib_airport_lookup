@@ -83,7 +83,7 @@ int main (int argc, char **argv)
   if (argc == 3) {
 		placesPath = argv[2];
 	} else {
-		printf("Note: airports path not specified, using `places2k.txt`\n");
+		printf("Note: places file path not specified, using `places2k.txt`\n");
 	}
 
   initTrie(placesPath);

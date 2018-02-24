@@ -10,7 +10,7 @@
 #include "places_airports.h"
 
 /* Default timeout can be changed using clnt_control() */
-static struct timeval TIMEOUT = { 25, 0 };
+static struct timeval TIMEOUT = { 5, 0 };
 
 places_ret *
 places_qry_1(places_req *argp, CLIENT *clnt)

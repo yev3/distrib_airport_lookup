@@ -35,7 +35,7 @@ Strengths and weakness
 Instructions to run
 ================================================================================
 
-Note: run_all bash script is provided to execute the commands below.
+run_all bash script is provided to execute the commands below.
 
 Execute the following commands in the project directory:
 
@@ -51,7 +51,7 @@ $ ./client [places_server_host] seattle wa
 Files summary
 ================================================================================
 
-*  places-airports.x / .h / _clnt.c / _xdr.c
+*  places_airports.x / .h / _clnt.c / _xdr.c
 --------------------------------------------------------------------------------
 IDL program file and the generated common stubs to marchall and retrieve data.
 
@@ -65,21 +65,21 @@ Implementation of the KD tree. Two public functions are used to init and query:
 extern "C" void initKD(const char* airportsPath);
 airport* kd5Closest(const location target);
 
-*  airports_server.cpp / airports_server_svc.c
+*  airports_server.cpp
 --------------------------------------------------------------------------------
 Server stub implementation that interfaces with KD tree to retrieve records.
 
 *  places_trie.h / .cpp
 --------------------------------------------------------------------------------
 Implementation of the Trie data structure. Module interface to init and query:
-extern "C" void initTrie(const char* placesPath);
+void initTrie(const char* placesPath);
 TrieQueryResult queryPlace(const std::string &city, const std::string &state);
 
-*  places_server.cpp / places_server_svc.c
+*  places_server.cpp
 --------------------------------------------------------------------------------
 Server stub implementation that initializes Trie and queries to find cities.
 
-*  client_main.cpp
+*  places_client.cpp
 --------------------------------------------------------------------------------
 Client for places_server.
 

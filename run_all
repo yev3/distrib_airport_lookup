@@ -4,7 +4,7 @@ pkill -f places_server
 pkill -f airports_server
 
 echo "Building.."
-make
+make debug
 
 echo "Launching airports_server.."
 ./airports_server &

@@ -61,23 +61,27 @@ places_prog_1(struct svc_req *rqstp, register SVCXPRT *transp)
 extern char* airportsHost;
 extern void initTrie(const char* placesPath);
 
-int
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
-  char* placesPath = "places2k.txt";
-
 	if (argc < 2 || 3 < argc) {
 		printf ("usage: %s <airports-host> [airportsFile]\n", argv[0]);
 		exit (1);
 	}
 
-  airportsHost = argv[1];
+	airportsHost = argv[1];
 
-  if (argc == 3) 
-    placesPath = argv[2];
+	char* placesPath = "places2k.txt";
+
+  if (argc == 3) {
+		placesPath = argv[2];
+	} else {
+		printf("Note: airports path not specified, using `places2k.txt`\n");
+	}
 
   initTrie(placesPath);
-  
+
+  // Note: code below was auto-generated
+
 	register SVCXPRT *transp;
 
 	pmap_unset (PLACES_PROG, PLACES_VERS);

@@ -8,6 +8,7 @@ LDLIBS += -lnsl
 
 PROJ_OBJECTS = $(addsuffix .o,$(basename $(wildcard *.c *.cpp)))
 PROJ_HEADERS = $(wildcard *.h)
+COMMON_FUNCT = common.o places-airports_clnt.o places-airports_xdr.o -lnsl
 
 all : client places_server airports_server
 all : CXXFLAGS += -O3 -DNDEBUG
@@ -15,13 +16,13 @@ all : CFLAGS += -O3 -DNDEBUG
 
 debug: client places_server airports_server
 
-client : client_main.o common.o places_trie.o airports_kd_tree.o places-airports_clnt.o places-airports_xdr.o -lnsl
+client : client_main.o $(COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-places_server : places_server.o places_trie.o common.o places_server_svc.o places-airports_clnt.o places-airports_xdr.o -lnsl
+places_server : places_server.o places_trie.o places_server_svc.o $(COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-airports_server : airports_server.o airports_server_svc.o airports_kd_tree.o common.o places-airports_xdr.o -lnsl
+airports_server : airports_server.o airports_server_svc.o airports_kd_tree.o $ (COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 # Header dependencies in the project

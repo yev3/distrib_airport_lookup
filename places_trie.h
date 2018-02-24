@@ -30,11 +30,11 @@ extern "C" void initTrie(const char* placesPath);
  * \brief Performs an efficient prefix completion lookup using a Trie data
  * structure. Uses state to filter ambiguous entries. Returns ref to 
  * stored records and flag if lookup was not found or is ambiguous.
- * \param city City name to lookup
+ * \param cityState City name to lookup
  * \param state State to use when ambiguous entries
  * \return A list of references to city records, and a flag if ambiguous
  */
-TrieQueryResult queryPlace(const std::string &city, const std::string &state);
+TrieQueryResult queryPlace(const name_state &cityState);
 
 // Trie class that is used to perform an efficient lookup
 /*****************************************************************************/

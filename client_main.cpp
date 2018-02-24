@@ -15,7 +15,7 @@ const char *programUsage[] = {
   "       client <places-host> <city> [state]",
   "",
   "       Use -p flag to search by latitude / longitude:",
-  "       client -p <places-host> <latitude> <longitude>",
+  "       client -p <places-host> \"<latitude>\" \"<longitude>\"",
 };
 
 void showUsageAndExit() {
@@ -81,7 +81,7 @@ void parseArgs(int argc, char **argv, char **host, places_req &req) {
 int main (int argc, char *argv[])
 {
   char *host = nullptr;   // Host of the places server
-  places_req req;         // Request to the places server
+  places_req req {};         // Request to the places server
 
   // Parse arguments and build a request to send
   parseArgs(argc, argv, &host, req);
@@ -93,16 +93,20 @@ int main (int argc, char *argv[])
 		exit(1);
 	}
 
+  // Query the places server
 	places_ret *placesResult = places_qry_1(&req, clnt);
-
 	if (placesResult == nullptr) {
 		clnt_perror (clnt, "call failed");
+    clnt_destroy (clnt);
     exit(1);
 	} 
 
+  // Display result
   std::cout << *placesResult << std::endl;
 
   // Free resources
   clnt_freeres(clnt, (xdrproc_t)xdr_places_ret, (caddr_t)(placesResult));
 	clnt_destroy (clnt);
+
+  exit(0);
 }

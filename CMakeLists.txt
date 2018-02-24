@@ -7,9 +7,9 @@ set(CMAKE_C_STANDARD 11)
 set(COMMON_FUNCT
     common.cpp
     common.h
-    places-airports_clnt.c
-    places-airports_xdr.c
-    places-airports.h
+        places_airports_clnt.c
+        places_airports_xdr.c
+        places_airports.h
 )
 
 add_executable(client
@@ -18,17 +18,15 @@ add_executable(client
 )
 
 add_executable(places_server
-    places_server_svc.c
-    places_server.cpp
+        places_server.cpp
     places_trie.cpp
     places_trie.h
     ${COMMON_FUNCT}
 )
 
 add_executable(airports_server
-    airports_server_svc.c
-    airports_server.cpp
-    airports_kd_tree.cpp
+        airports_server.cpp
+        airports_kd_tree.cpp
     airports_kd_tree.h
     ${COMMON_FUNCT}
 )

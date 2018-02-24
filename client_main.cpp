@@ -4,7 +4,7 @@
  * Project #2: A Three-Tiered Airport Lookup System
  *****************************************************************************/
 
-#include "places-airports.h"
+#include "places_airports.h"
 #include "common.h"
 #include <iostream>
 #include <iomanip>

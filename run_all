@@ -4,6 +4,7 @@ pkill -f places_server
 pkill -f airports_server
 
 echo "run_all: Building.."
+make clean
 make
 
 echo "run_all: Launching airports_server.."

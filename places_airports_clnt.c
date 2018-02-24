@@ -2,13 +2,15 @@
  * Yevgeni Kamenski
  * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
+ *
+ * Auto-generated place and airport client stubs.
  *****************************************************************************/
 
 #include <memory.h> /* for memset */
-#include "places-airports.h"
+#include "places_airports.h"
 
 /* Default timeout can be changed using clnt_control() */
-static struct timeval TIMEOUT = { 25, 0 };
+static struct timeval TIMEOUT = { 5, 0 };
 
 places_ret *
 places_qry_1(places_req *argp, CLIENT *clnt)

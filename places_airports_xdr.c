@@ -2,9 +2,11 @@
  * Yevgeni Kamenski
  * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
+ *
+ * Auto-generated XDR routines
  *****************************************************************************/
 
-#include "places-airports.h"
+#include "places_airports.h"
 
 bool_t
 xdr_location (XDR *xdrs, location *objp)

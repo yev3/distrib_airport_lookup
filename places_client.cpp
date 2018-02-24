@@ -2,9 +2,11 @@
  * Yevgeni Kamenski
  * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
+ *
+ * Places server client.
  *****************************************************************************/
 
-#include "places-airports.h"
+#include "places_airports.h"
 #include "common.h"
 #include <iostream>
 #include <iomanip>
@@ -15,8 +17,47 @@ const char *programUsage[] = {
   "       client <places-host> <city> [state]",
   "",
   "       Use -p flag to search by latitude / longitude:",
-  "       client -p <places-host> <latitude> <longitude>",
+R"(       client -p <places-host> "<latitude>" "<longitude>")",
 };
+
+// Exit the program, showing usage.
+void showUsageAndExit();
+
+// Helper to parse user's arguments into host and request object given.
+void parseArgs(int argc, char **argv, char **host, places_req &req);
+
+int main (int argc, char *argv[])
+{
+  char *host = nullptr;   // Host of the places server
+  places_req req {};         // Request to the places server
+
+  // Parse arguments and build a request to send
+  parseArgs(argc, argv, &host, req);
+
+  // Create a client handle
+	CLIENT *clnt = clnt_create (host, PLACES_PROG, PLACES_VERS, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit(1);
+	}
+
+  // Query the places server
+	places_ret *placesResult = places_qry_1(&req, clnt);
+	if (placesResult == nullptr) {
+		clnt_perror (clnt, "call failed");
+    clnt_destroy (clnt);
+    exit(1);
+	} 
+
+  // Display result
+  std::cout << *placesResult << std::endl;
+
+  // Free resources
+  clnt_freeres(clnt, (xdrproc_t)xdr_places_ret, (caddr_t)(placesResult));
+	clnt_destroy (clnt);
+
+  exit(0);
+}
 
 void showUsageAndExit() {
   for (const char *line : programUsage) {
@@ -31,18 +72,18 @@ void parseArgs(int argc, char **argv, char **host, places_req &req) {
   int c;
   while ((c = getopt(argc, argv, "p")) != -1) {
     switch (c) {
-    case 'p':
-      isLatLongQuery = true;
-      break;
-    case '?':
-      if (isprint(optopt))
-        std::cerr << "Unknown option '-" << (char)optopt << "'.\n";
-      else
-        std::cerr << "Unknown option char '" << std::hex << optopt << "'.\n";
-      showUsageAndExit();
-      break;
-    default:
-      abort();
+      case 'p':
+        isLatLongQuery = true;
+        break;
+      case '?':
+        if (isprint(optopt))
+          std::cerr << "Unknown option '-" << (char)optopt << "'.\n";
+        else
+          std::cerr << "Unknown option char '" << std::hex << optopt << "'.\n";
+        showUsageAndExit();
+        break;
+      default:
+        abort();
     }
   }
 
@@ -75,34 +116,4 @@ void parseArgs(int argc, char **argv, char **host, places_req &req) {
     req.places_req_u.loc.latitude = latitude;
     req.places_req_u.loc.longitude = longitude;
   }
-}
-
-
-int main (int argc, char *argv[])
-{
-  char *host = nullptr;   // Host of the places server
-  places_req req;         // Request to the places server
-
-  // Parse arguments and build a request to send
-  parseArgs(argc, argv, &host, req);
-
-  // Create a client handle
-	CLIENT *clnt = clnt_create (host, PLACES_PROG, PLACES_VERS, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit(1);
-	}
-
-	places_ret *placesResult = places_qry_1(&req, clnt);
-
-	if (placesResult == nullptr) {
-		clnt_perror (clnt, "call failed");
-    exit(1);
-	} 
-
-  std::cout << *placesResult << std::endl;
-
-  // Free resources
-  clnt_freeres(clnt, (xdrproc_t)xdr_places_ret, (caddr_t)(placesResult));
-	clnt_destroy (clnt);
 }

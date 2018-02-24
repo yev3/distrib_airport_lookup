@@ -2,6 +2,8 @@
  * Yevgeni Kamenski
  * CPSC 5520 Distributed Systems, Seattle University, 2018
  * Project #2: A Three-Tiered Airport Lookup System
+ *
+ * Trie build and lookup implementation.
  *****************************************************************************/
 
 #include "places_trie.h"
@@ -49,7 +51,10 @@ void initTrie(const char *placesPath) {
   log_printf("Loaded %d places.", (int)trie->size());
 }
 
-TrieQueryResult queryPlace(const std::string &city, const std::string &state) {
+TrieQueryResult queryPlace(const name_state &cityState) {
+  const std::string city = cityState.name;
+  const std::string state = cityState.state;
+
   // Get set of cities with same name or ambiguous result
   auto result = trie->query(city);
 
@@ -187,7 +192,7 @@ TrieQueryResult PlacesTrie::query(const std::string &cname,
                                    });
 
   // Return empty result when not found
-  if (c != it->c)
+  if (it == node.next.cend() || c != it->c)
     return TrieQueryResult{TFoundPlaces(places->cend(), places->cend()), false};
 
   // Continue searching at next depth

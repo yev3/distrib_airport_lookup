@@ -25,7 +25,8 @@ Three-tiered client-server system used to lookup closest airports to the user's 
 [yk@arch bin]$ ./airports_server &
 [yk@arch bin]$ ./places_server localhost &
 [yk@arch bin]$ ./client localhost seattle
-
+```
+```
 Seattle, WA {   47.63, -122.33 }
 #   Dist Code State Name
 --+-----+----+-----+------------------------------------------
@@ -34,8 +35,6 @@ Seattle, WA {   47.63, -122.33 }
 3.  12.3 SEA  WA    Seattle
 4.  20.4 PAE  WA    Everet/Paine
 5.  22.7 PWT  WA    Bremerton
-
-[yk@arch bin]$
 ```
 
 ## File Descriptions

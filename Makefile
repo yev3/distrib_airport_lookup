@@ -1,5 +1,4 @@
 # Y.Kamenski
-# Project 2
 
 VPATH = src
 
@@ -13,10 +12,6 @@ PROJ_HEADERS = $(wildcard *.h)
 PROJ_BIN_NAMES = client places_server airports_server
 PROJ_BIN_PATHS = $(addprefix bin/,$(PROJ_BIN_NAMES))
 COMMON_FUNCT = common.o places_airports_clnt.o places_airports_xdr.o
-
-
-PHONY: help
-help: ; $(info $$var is [${var}])
 
 all : $(PROJ_BIN_PATHS)
 all : CXXFLAGS += -O3 -DNDEBUG

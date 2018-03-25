@@ -1,92 +1,73 @@
-Team members and their respective contributions.
-================================================================================
-Y. Kamenski wrote all the code.
+## Summary
 
+Three-tiered client-server system used to lookup closest airports to the user's given city.
 
-Data structures and algorithms to meet performance and usability requirements.
-================================================================================
-airports_server:
-- A balanced KD tree was bulk-constructed from airports file.
-- Lookup is performed by keeping a set of closest 5 records and continually
-  pruning tree branches that fall outside the closest 5 range.
+### `client`
+- Used by client to query with a city and optional state. 
+- Uses RPC to contact the `places_server` with location information.
+- In case of ambiguity, an error with partial results is returned.  
+- Returns 5 closest airports to the user's given location.
 
-places_server:
-- A Trie was bulk-constructed from the places2k.txt file.
-- Lookup is performed by traversing the trie with given prefix, then attempting
-  to complete the query to the closest match.
-- User's provided state is used to resolve ambiguity in city's results.
-- When city couldn't be completed to closest match, ambiguous error is returned.
+### `places_server`
+- Uses a Trie constructed from the US Census location data file.
+- Auto-completes the query by efficiently looking up a proper prefix.
+- Uses user's state to resolve ambiguity (same city name in multiple states)
+- Contacts `airports_server` with lat/lon of city to query closest airports.
 
+### `airports_server`
+- A balanced KD tree was bulk-constructed from data file.
+- Efficiently queries K-Nearest-Neighbors by pruning tree branches. 
+- Uses RPC to return 5 closest airports to the given lat/lon request
 
-Third-party code (name and reference, if any)
-================================================================================
-No libraries other than STL were used.
+## Example Run
 
+```bash
+[yk@arch bin]$ ./airports_server &
+[yk@arch bin]$ ./places_server localhost &
+[yk@arch bin]$ ./client localhost seattle
 
-Strengths and weakness
-================================================================================
-+ C++ containers and managed pointers are used to simplify code
-+ Programs are robust and fail at startup in case of data file failure
+Seattle, WA {   47.63, -122.33 }
+#   Dist Code State Name
+--+-----+----+-----+------------------------------------------
+1.   6.8 BFI  WA    Seattle/Boeing
+2.  10.2 RNT  WA    Renton
+3.  12.3 SEA  WA    Seattle
+4.  20.4 PAE  WA    Everet/Paine
+5.  22.7 PWT  WA    Bremerton
 
-- Only bulk-loading are implemented for simplicity in KD & Trie data structures
-- Only query are implemented in KD & Trie data structures
+[yk@arch bin]$
+```
 
+## File Descriptions
 
-Instructions to run
-================================================================================
+### `places_airports.x / .h / _clnt.c / _xdr.c`
 
-run_all bash script is provided to execute the commands below.
-
-Execute the following commands in the project directory:
-
-$ make
-
-$ ./airports_server &
-
-$ ./places_server [airports_server_host] &
-
-$ ./client [places_server_host] seattle wa
-
-
-Files summary
-================================================================================
-
-*  places_airports.x / .h / _clnt.c / _xdr.c
---------------------------------------------------------------------------------
 IDL program file and the generated common stubs to marchall and retrieve data.
 
-*  common.h / .cpp
---------------------------------------------------------------------------------
+### `common.h / .cpp`
 Structures / routines common to all files to handle errors and console output.
 
-*  airports_kd_tree.h / .cpp
---------------------------------------------------------------------------------
+### `airports_kd_tree.h / .cpp`
 Implementation of the KD tree. Two public functions are used to init and query:
 extern "C" void initKD(const char* airportsPath);
 airport* kd5Closest(const location target);
 
-*  airports_server.cpp
---------------------------------------------------------------------------------
+### `airports_server.cpp`
 Server stub implementation that interfaces with KD tree to retrieve records.
 
-*  places_trie.h / .cpp
---------------------------------------------------------------------------------
+### `places_trie.h / .cpp`
 Implementation of the Trie data structure. Module interface to init and query:
 void initTrie(const char* placesPath);
 TrieQueryResult queryPlace(const std::string &city, const std::string &state);
 
-*  places_server.cpp
---------------------------------------------------------------------------------
+### `places_server.cpp`
 Server stub implementation that initializes Trie and queries to find cities.
 
-*  places_client.cpp
---------------------------------------------------------------------------------
+### `places_client.cpp`
 Client for places_server.
 
-*  Makefile
---------------------------------------------------------------------------------
+### `Makefile`
 Used to build the project.
 
-*  run_all
---------------------------------------------------------------------------------
+### `run_all.sh`
 Bash script to build, launch server instances, and perform a sample query.

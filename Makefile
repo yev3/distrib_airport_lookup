@@ -1,32 +1,40 @@
 # Y.Kamenski
 # Project 2
 
+VPATH = src
+
 LINK.o =$(LINK.cc)
-CFLAGS += -g
-CXXFLAGS = -g -Wall -pedantic -std=c++1y
+CFLAGS += -g -Iinclude
+CXXFLAGS = -g -Wall -pedantic -std=c++1y -Iinclude
 LDLIBS += -lnsl
 
 PROJ_OBJECTS = $(addsuffix .o,$(basename $(wildcard *.c *.cpp)))
 PROJ_HEADERS = $(wildcard *.h)
+PROJ_BIN_NAMES = client places_server airports_server
+PROJ_BIN_PATHS = $(addprefix bin/,$(PROJ_BIN_NAMES))
 COMMON_FUNCT = common.o places_airports_clnt.o places_airports_xdr.o
 
-all : client places_server airports_server
+
+PHONY: help
+help: ; $(info $$var is [${var}])
+
+all : $(PROJ_BIN_PATHS)
 all : CXXFLAGS += -O3 -DNDEBUG
 all : CFLAGS += -O3 -DNDEBUG
 
-debug: client places_server airports_server
+debug: $(PROJ_BIN_PATHS)
 
-client : places_client.o $(COMMON_FUNCT)
+bin/client : places_client.o $(COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-places_server : places_server.o places_trie.o $(COMMON_FUNCT)
+bin/places_server : places_server.o places_trie.o $(COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-airports_server : airports_server.o airports_kd_tree.o $(COMMON_FUNCT)
+bin/airports_server : airports_server.o airports_kd_tree.o $(COMMON_FUNCT)
 	$(LINK.o) $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 $(PROJ_OBJECTS): $(PROJ_HEADERS)
 
 clean:
-	$(RM) client places_server airports_server $(PROJ_OBJECTS)
+	$(RM) $(PROJ_BIN_PATHS) $(PROJ_OBJECTS)
 
